@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Kronometre | Minimal & Hızlı</title>
+
+    <meta name="description" content="Modern, hızlı, milisaniye hassasiyetinde ve tam responsive kronometre web uygulaması.">
+    <meta name="keywords" content="kronometre, stopwatch, lap time, zamanlayıcı, modern, minimal, responsive, PWA">
+    <meta name="author" content="Gemini AI">
+    
+    <meta property="og:title" content="Modern Kronometre">
+    <meta property="og:description" content="Minimal ve requestAnimationFrame tabanlı yüksek performanslı kronometre.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="[Sitenizin URL'si]">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1c1c1e"> 
+    <link rel="apple-touch-icon" href="icons/apple-icon-180.png"> 
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls">
+            <button id="theme-toggle" class="control-button" aria-label="Tema Değiştir">
+                <span class="icon">☀️</span>
+            </button>
+            <button id="fullscreen-toggle" class="control-button mobile-only" aria-label="Tam Ekran Modu">
+                <span class="icon">💻</span>
+            </button>
+        </div>
+
+        <div class="stopwatch-display">
+            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>.<span id="milliseconds">000</span>
+        </div>
+        
+        <div class="controls-group">
+            <button id="lap-reset-button" class="action-button reset-lap-button" disabled>Tur / Sıfırla</button>
+            <button id="start-stop-button" class="action-button start-stop-button">Başlat</button>
+        </div>
+
+        <div class="laps-container">
+            <h3>Tur Zamanları</h3>
+            <div class="laps-header">
+                <span class="lap-number-header">#</span>
+                <span class="lap-duration-header">Tur Süresi</span>
+                <span class="total-time-header">Toplam Süre</span>
+            </div>
+            <ul id="laps-list" class="laps-list">
+                </ul>
+        </div>
+
+        <button id="download-csv-button" class="download-button" style="display:none;" disabled>CSV İndir</button>
+    </div>
+
+    <div class="audio-control">
+        <label for="audio-checkbox">
+            <input type="checkbox" id="audio-checkbox"> Sesli Uyarı (Başlat/Durdur)
+        </label>
+        </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker: Kayıt başarılı!', reg.scope))
+                    .catch(err => console.log('Service Worker: Kayıt başarısız!', err));
+            });
+        }
+    </script>
+</body>
+</html>

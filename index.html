@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Modern, hızlı ve kullanıcı dostu kronometre uygulaması. Tur zamanı, CSV indirme ve offline çalışma özelliği.">
+    <meta name="keywords" content="kronometre, stopwatch, zamanlayıcı, timer, tur zamanı">
+    <meta property="og:title" content="Modern Kronometre">
+    <meta property="og:description" content="Profesyonel kronometre uygulaması - Milisaniye hassasiyetinde">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#667eea">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk1vZGVybiBLcm9ub21ldHJlIiwKICAic2hvcnRfbmFtZSI6ICJLcm9ub21ldHJlIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxYTFhMmUiLAogICJ0aGVtZV9jb2xvciI6ICIjNjY3ZWVhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzY3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzZSUzY2NpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nNDUnIGZpbGw9JyM2NjdlZWEnLyUzZSUzY3RleHQgeD0nNTAlMjcgeT0nNjAlMjcgZm9udC1zaXplPSc0MCcgZmlsbD0nd2hpdGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnJTNl8J+SsSUzYy90ZXh0JTNlJTNjL3N2ZyUzZSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
+    <title>Modern Kronometre ⏱️</title>
+    <style>
+        /* CSS Reset ve Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Light Theme Colors */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: rgba(0, 0, 0, 0.1);
+            --btn-start: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --btn-stop: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --btn-reset: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --btn-lap: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --lap-odd: #f7fafc;
+            --lap-even: #edf2f7;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Colors */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-secondary: #0f0f1e;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --card-bg: rgba(26, 32, 44, 0.95);
+            --shadow: rgba(0, 0, 0, 0.5);
+            --lap-odd: #2d3748;
+            --lap-even: #1a202c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-primary);
+            transition: background 0.5s ease;
+        }
+
+        /* Main Container */
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px var(--shadow);
+            max-width: 600px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls-top {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle, .fullscreen-btn, .download-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--btn-start);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover, .fullscreen-btn:hover, .download-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .theme-toggle:active, .fullscreen-btn:active, .download-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Display Area */
+        .display {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 50px 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: inset 0 2px 10px var(--shadow);
+        }
+
+        .time {
+            font-family: 'Courier New', monospace;
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .milliseconds {
+            font-size: 36px;
+            opacity: 0.7;
+        }
+
+        /* Buttons Container */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-start {
+            background: var(--btn-start);
+        }
+
+        .btn-stop {
+            background: var(--btn-stop);
+        }
+
+        .btn-reset {
+            background: var(--btn-reset);
+        }
+
+        .btn-lap {
+            background: var(--btn-lap);
+            grid-column: span 2;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Lap Times Section */
+        .laps-section {
+            margin-top: 30px;
+        }
+
+        .laps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .laps-header h3 {
+            color: var(--text-primary);
+            font-size: 20px;
+        }
+
+        .laps-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 15px;
+            background: var(--bg-secondary);
+            padding: 10px;
+        }
+
+        .laps-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .laps-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .laps-list::-webkit-scrollbar-thumb {
+            background: var(--btn-start);
+            border-radius: 10px;
+        }
+
+        .lap-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .lap-item:nth-child(odd) {
+            background: var(--lap-odd);
+        }
+
+        .lap-item:nth-child(even) {
+            background: var(--lap-even);
+        }
+
+        .lap-number {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .lap-time, .lap-total {
+            color: var(--text-primary);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                border-radius: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .time {
+                font-size: 56px;
+            }
+
+            .milliseconds {
+                font-size: 28px;
+            }
+
+            .btn {
+                padding: 18px;
+                font-size: 16px;
+            }
+
+            .theme-toggle, .fullscreen-btn, .download-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .lap-item {
+                grid-template-columns: 50px 1fr 1fr;
+                gap: 10px;
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .time {
+                font-size: 48px;
+            }
+
+            .milliseconds {
+                font-size: 24px;
+            }
+
+            .buttons {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Fullscreen Styles */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            max-width: 100%;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Pulse Animation for Running State */
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+            }
+        }
+
+        .display.running {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Header -->
+        <div class="header">
+            <h1>⏱️ Kronometre</h1>
+            <div class="controls-top">
+                <button class="theme-toggle" id="themeToggle" title="Tema Değiştir">🌙</button>
+                <button class="fullscreen-btn" id="fullscreenBtn" title="Tam Ekran">⛶</button>
+                <button class="download-btn" id="downloadBtn" title="CSV İndir">⬇️</button>
+            </div>
+        </div>
+
+        <!-- Display -->
+        <div class="display" id="display">
+            <div class="time">
+                <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span><span class="milliseconds">.<span id="milliseconds">000</span></span>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="buttons">
+            <button class="btn btn-start" id="startBtn">▶ Başlat</button>
+            <button class="btn btn-reset" id="resetBtn">↻ Sıfırla</button>
+            <button class="btn btn-lap" id="lapBtn" disabled>🏁 Tur Ekle</button>
+        </div>
+
+        <!-- Lap Times -->
+        <div class="laps-section" id="lapsSection" style="display: none;">
+            <div class="laps-header">
+                <h3>📊 Tur Zamanları</h3>
+            </div>
+            <div class="laps-list" id="lapsList">
+                <div class="empty-state">Henüz tur eklenmedi</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Stopwatch Class - Modern ve performanslı kronometre yönetimi
+        class Stopwatch {
+            constructor() {
+                this.startTime = 0;
+                this.elapsedTime = 0;
+                this.isRunning = false;
+                this.animationId = null;
+                this.laps = [];
+                this.lastLapTime = 0;
+                
+                // Load saved state from localStorage
+                this.loadState();
+                
+                // DOM Elements
+                this.elements = {
+                    hours: document.getElementById('hours'),
+                    minutes: document.getElementById('minutes'),
+                    seconds: document.getElementById('seconds'),
+                    milliseconds: document.getElementById('milliseconds'),
+                    display: document.getElementById('display'),
+                    startBtn: document.getElementById('startBtn'),
+                    resetBtn: document.getElementById('resetBtn'),
+                    lapBtn: document.getElementById('lapBtn'),
+                    lapsList: document.getElementById('lapsList'),
+                    lapsSection: document.getElementById('lapsSection'),
+                    themeToggle: document.getElementById('themeToggle'),
+                    fullscreenBtn: document.getElementById('fullscreenBtn'),
+                    downloadBtn: document.getElementById('downloadBtn'),
+                    container: document.getElementById('mainContainer')
+                };
+                
+                this.initEventListeners();
+                this.updateDisplay();
+                
+                // Resume if was running
+                if (this.isRunning) {
+                    this.start();
+                }
+                
+                // Update laps display
+                if (this.laps.length > 0) {
+                    this.displayLaps();
+                }
+            }
+            
+            // Event Listeners
+            initEventListeners() {
+                this.elements.startBtn.addEventListener('click', () => this.toggle());
+                this.elements.resetBtn.addEventListener('click', () => this.reset());
+                this.elements.lapBtn.addEventListener('click', () => this.addLap());
+                this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+                this.elements.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+                this.elements.downloadBtn.addEventListener('click', () => this.downloadCSV());
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        this.toggle();
+                    } else if (e.code === 'KeyR') {
+                        this.reset();
+                    } else if (e.code === 'KeyL' && !this.elements.lapBtn.disabled) {
+                        this.addLap();
+                    }
+                });
+            }
+            
+            // Start/Stop toggle
+            toggle() {
+                if (this.isRunning) {
+                    this.stop();
+                } else {
+                    this.start();
+                }
+            }
+            
+            // Start stopwatch
+            start() {
+                if (!this.isRunning) {
+                    this.startTime = Date.now() - this.elapsedTime;
+                    this.isRunning = true;
+                    this.elements.startBtn.innerHTML = '⏸ Durdur';
+                    this.elements.startBtn.classList.remove('btn-start');
+                    this.elements.startBtn.classList.add('btn-stop');
+                    this.elements.lapBtn.disabled = false;
+                    this.elements.display.classList.add('running');
+                    this.update();
+                    this.saveState();
+                }
+            }
+            
+            // Stop stopwatch
+            stop() {
+                if (this.isRunning) {
+                    this.isRunning = false;
+                    this.elapsedTime = Date.now() - this.startTime;
+                    cancelAnimationFrame(this.animationId);
+                    this.elements.startBtn.innerHTML = '▶ Başlat';
+                    this.elements.startBtn.classList.remove('btn-stop');
+                    this.elements.startBtn.classList.add('btn-start');
+                    this.elements.display.classList.remove('running');
+                    this.saveState();
+                }
+            }
+            
+            // Reset stopwatch
+            reset() {
+                this.stop();
+                this.elapsedTime = 0;
+                this.laps = [];
+                this.lastLapTime = 0;
+                this.updateDisplay();
+                this.elements.lapBtn.disabled = true;
+                this.elements.lapsSection.style.display = 'none';
+                this.elements.lapsList.innerHTML = '<div class="empty-state">Henüz tur eklenmedi</div>';
+                this.saveState();
+            }
+            
+            // Update display using requestAnimationFrame for smooth performance
+            update() {
+                if (this.isRunning) {
+                    this.elapsedTime = Date.now() - this.startTime;
+                    this.updateDisplay();
+                    this.animationId = requestAnimationFrame(() => this.update());
+                }
+            }
+            
+            // Update time display
+            updateDisplay() {
+                const time = this.elapsedTime;
+                const hours = Math.floor(time / 3600000);
+                const minutes = Math.floor((time % 3600000) / 60000);
+                const seconds = Math.floor((time % 60000) / 1000);
+                const milliseconds = Math.floor((time % 1000));
+                
+                this.elements.hours.textContent = this.pad(hours);
+                this.elements.minutes.textContent = this.pad(minutes);
+                this.elements.seconds.textContent = this.pad(seconds);
+                this.elements.milliseconds.textContent = this.pad(milliseconds, 3);
+            }
+            
+            // Add lap time
+            addLap() {
+                const currentTime = this.elapsedTime;
+                const lapTime = currentTime - this.lastLapTime;
+                
+                this.laps.unshift({
+                    number: this.laps.length + 1,
+                    lapTime: lapTime,
+                    totalTime: currentTime
+                });
+                
+                this.lastLapTime = currentTime;
+                this.displayLaps();
+                this.saveState();
+            }
+            
+            // Display lap times
+            displayLaps() {
+                this.elements.lapsSection.style.display = 'block';
+                this.elements.lapsList.innerHTML = '';
+                
+                this.laps.forEach(lap => {
+                    const lapElement = document.createElement('div');
+                    lapElement.className = 'lap-item';
+                    lapElement.innerHTML = `
+                        <div class="lap-number">#${lap.number}</div>
+                        <div class="lap-time">${this.formatTime(lap.lapTime)}</div>
+                        <div class="lap-total">${this.formatTime(lap.totalTime)}</div>
+                    `;
+                    this.elements.lapsList.appendChild(lapElement);
+                });
+            }
+            
+            // Format time for display
+            formatTime(ms) {
+                const hours = Math.floor(ms / 3600000);
+                const minutes = Math.floor((ms % 3600000) / 60000);
+                const seconds = Math.floor((ms % 60000) / 1000);
+                const milliseconds = Math.floor((ms % 1000));
+                
+                if (hours > 0) {
+                    return `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}.${this.pad(milliseconds, 3)}`;
+                }
+                return `${this.pad(minutes)}:${this.pad(seconds)}.${this.pad(milliseconds, 3)}`;
+            }
+            
+            // Pad numbers with zeros
+            pad(num, size = 2) {
+                return String(num).padStart(size, '0');
+            }
+            
+            // Toggle theme
+            toggleTheme() {
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                this.elements.themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', newTheme);
+            }
+            
+            // Toggle fullscreen
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    this.elements.container.requestFullscreen().catch(err => {
+                        console.log('Fullscreen error:', err);
+                    });
+                    this.elements.container.classList.add('fullscreen');
+                    this.elements.fullscreenBtn.textContent = '✕';
+                } else {
+                    document.exitFullscreen();
+                    this.elements.container.classList.remove('fullscreen');
+                    this.elements.fullscreenBtn.textContent = '⛶';
+                }
+            }
+            
+            // Download CSV
+            downloadCSV() {
+                if (this.laps.length === 0) {
+                    alert('İndirilecek tur zamanı bulunmuyor!');
+                    return;
+                }
+                
+                let csv = 'Tur No,Tur Süresi,Toplam Süre\n';
+                
+                [...this.laps].reverse().forEach(lap => {
+                    csv += `${lap.number},${this.formatTime(lap.lapTime)},${this.formatTime(lap.totalTime)}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `kronometre_${new Date().toISOString().slice(0,10)}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Save state to localStorage
+            saveState() {
+                const state = {
+                    elapsedTime: this.elapsedTime,
+                    isRunning: this.isRunning,
+                    laps: this.laps,
+                    lastLapTime: this.lastLapTime,
+                    startTime: this.isRunning ? this.startTime : 0
+                };
+                localStorage.setItem('stopwatchState', JSON.stringify(state));
+            }
+            
+            // Load state from localStorage
+            loadState() {
+                const saved = localStorage.getItem('stopwatchState');
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    this.elapsedTime = state.elapsedTime || 0;
+                    this.isRunning = state.isRunning || false;
+                    this.laps = state.laps || [];
+                    this.lastLapTime = state.lastLapTime || 0;
+                    
+                    if (this.isRunning && state.startTime) {
+                        this.startTime = state.startTime;
+                    }
+                }
+            }
+        }
+        
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Initialize stopwatch when DOM is loaded
+        let stopwatch;
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                stopwatch = new Stopwatch();
+            });
+        } else {
+            stopwatch = new Stopwatch();
+        }
+        
+        // Update theme toggle icon
+        window.addEventListener('load', () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+        });
+        
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24oZSkge2Uud2FpdFVudGlsKHNlbGYuc2tpcFdhaXRpbmcoKSl9KTtzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJyxmdW5jdGlvbihlKXtlfSk7')
+                    .then(reg => console.log('PWA Ready'))
+                    .catch(err => console.log('SW Error:', err));
+            });
+        }
+    </script>
+</body>
+</html>

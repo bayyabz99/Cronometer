@@ -1,0 +1,259 @@
+/* Genel Ayarlar ve Reset */
+:root {
+    /* Koyu Tema Değişkenleri (Varsayılan) */
+    --background-start: #1c1c1e; /* Koyu Gri (Apple Dark) */
+    --background-end: #0a0a0a;
+    --text-color: #f2f2f7; /* Açık Gri */
+    --button-bg: #333333;
+    --button-bg-hover: #444444;
+    --accent-color: #ff9500; /* Apple Turuncusu */
+    --accent-color-hover: #ffad33;
+    --lap-list-bg: rgba(255, 255, 255, 0.05);
+    --border-color: #2c2c2e;
+    --lap-text-color: #c7c7cc;
+}
+
+/* Light Tema Geçişi */
+.light-theme {
+    --background-start: #f2f2f7; /* Açık Gri */
+    --background-end: #ffffff;
+    --text-color: #1c1c1e; /* Koyu Gri */
+    --button-bg: #e5e5ea;
+    --button-bg-hover: #d1d1d6;
+    --accent-color: #007aff; /* Apple Mavisi */
+    --accent-color-hover: #3394ff;
+    --lap-list-bg: rgba(0, 0, 0, 0.05);
+    --border-color: #d1d1d6;
+    --lap-text-color: #3c3c43;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inconsolata', monospace; /* Dijital Saat Fontu */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--background-start), var(--background-end));
+    color: var(--text-color);
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+.container {
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    background-color: transparent;
+    border-radius: 20px;
+    text-align: center;
+}
+
+/* --- Başlık ve Kontrol Butonları --- */
+
+.header-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.control-button {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 44px; /* Dokunmatik Uyumlu Min Boyut */
+    height: 44px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.control-button:hover {
+    background: var(--button-bg-hover);
+}
+
+.control-button:active {
+    transform: scale(0.95);
+}
+
+/* --- Kronometre Göstergesi --- */
+
+.stopwatch-display {
+    font-size: 8rem; /* Büyük Font */
+    font-weight: 700;
+    margin-bottom: 40px;
+    letter-spacing: -3px; /* Apple tarzı sıkışık görünüm */
+}
+
+/* Milisaniye Font Boyutu */
+.stopwatch-display #milliseconds {
+    font-size: 0.6em; 
+    opacity: 0.8;
+}
+
+/* --- Ana Aksiyon Butonları --- */
+
+.controls-group {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+}
+
+.action-button {
+    width: 48%;
+    padding: 15px 0;
+    border: none;
+    border-radius: 40px; /* Yuvarlatılmış */
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease, color 0.3s ease;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Lap / Reset Butonu Stili */
+.reset-lap-button {
+    background: var(--button-bg);
+    color: var(--text-color);
+}
+
+.reset-lap-button:hover:not(:disabled) {
+    background: var(--button-bg-hover);
+}
+
+/* Başlat / Durdur Butonu Stili */
+.start-stop-button {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.start-stop-button:hover {
+    background: var(--accent-color-hover);
+}
+
+/* Durum: Çalışıyor (Dur) */
+.stopwatch-running #start-stop-button {
+    background: #dc3545; /* Kırmızı Durdur */
+}
+
+.stopwatch-running #start-stop-button:hover {
+    background: #c82333;
+}
+
+/* Devre Dışı Bırakılmış Butonlar */
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* --- Tur Zamanları Listesi (Lap Times) --- */
+
+.laps-container {
+    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.laps-container h3 {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--lap-text-color);
+}
+
+.laps-header,
+.lap-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 1rem;
+}
+
+.laps-header {
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 5px;
+}
+
+.lap-item {
+    border-bottom: 1px dashed var(--lap-list-bg);
+    color: var(--lap-text-color);
+}
+
+.lap-item:last-child {
+    border-bottom: none;
+}
+
+.lap-number-header, .lap-number { flex: 1; text-align: left; }
+.lap-duration-header, .lap-duration { flex: 2; text-align: center; }
+.total-time-header, .total-time { flex: 2; text-align: right; }
+
+/* CSV İndirme Butonu */
+.download-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: var(--accent-color);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.download-button:hover:not(:disabled) {
+    background: var(--accent-color-hover);
+}
+
+/* Sesli Uyarı Kontrolü */
+.audio-control {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* --- Duyarlılık (Responsive) Ayarları --- */
+
+/* Mobil ve Tablet İçin Ortak Ayarlar */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .stopwatch-display {
+        font-size: 5rem; /* Mobil için daha küçük */
+        margin-bottom: 30px;
+    }
+
+    .controls-group {
+        margin-bottom: 30px;
+    }
+
+    .lap-number-header, .lap-number { flex: 1; }
+    .lap-duration-header, .lap-duration { flex: 1.5; }
+    .total-time-header, .total-time { flex: 1.5; }
+}
+
+/* Sadece Mobil İçin Görüntülenen Buton */
+.mobile-only {
+    display: none;
+}
+@media (max-width: 600px) {
+    .mobile-only {
+        display: block;
+    }
+}
